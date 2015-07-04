@@ -1,3 +1,4 @@
-app:
-    resource: "@AppBundle/Controller/"
+assignment_github:
+    resource: "@AssignmentGithubBundle/Controller/"
     type:     annotation
+    prefix:   /

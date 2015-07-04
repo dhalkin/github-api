@@ -2,7 +2,7 @@
     "name": "d.halkin/github-api",
     "license": "proprietary",
     "type": "project",
-    "description": "The \"Symfony Standard Edition\" distribution",
+    "description": "The \"GitHub Api\" service",
     "autoload": {
         "psr-4": { "": "src/", "SymfonyStandard\\": "app/SymfonyStandard/" }
     },
@@ -21,7 +21,12 @@
         "guzzlehttp/guzzle": "~6.0"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~2.3"
+        "sensio/generator-bundle": "~2.3",
+        "phpunit/phpunit": "4.3.*",
+        "squizlabs/php_codesniffer": "2.*",
+        "escapestudios/symfony2-coding-standard": "~2.0",
+        "sebastian/phpcpd": "*",
+        "phpmd/phpmd": "@stable"
     },
     "scripts": {
         "post-root-package-install": [
