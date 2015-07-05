@@ -5,14 +5,17 @@ namespace Assignment\GithubBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use GuzzleHttp\Client;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 
 class DefaultController extends Controller
 {
+
+    const BASE_URL = 'https://api.github.com';
+
     /**
      * @Route("/")
      * @Template()
@@ -38,11 +41,27 @@ class DefaultController extends Controller
             $data = $form->getData();
 
             // check github
+            $client  = new Client(['base_uri' => self::BASE_URL]);
+
+            try{
+
+               //$res = $client->get('/users/dhalkin');
+               $res = $client->get('authorizations', ['auth' => [$data['username'], $data['password']]]);
+               $body = $res->getBody();
+
+            }catch (RequestException $e){
+
+                if($e->hasResponse()){
+                    $code = $e->getResponse()->getStatusCode();
+                    $e->getResponse()->getReasonPhrase();
+                    sleep(1);
+                }
+            }
 
 
 
             //login process
-            $token = new UsernamePasswordToken( $data['username'], $data['password'], 'main', ['ROLE_USER']);
+            $token = new UsernamePasswordToken( $data['username'], $oauthToken, 'main', ['ROLE_USER']);
             $this->get('security.token_storage')->setToken($token);
             return $this->redirectToRoute('assignment_github_default_user');
 
