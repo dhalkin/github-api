@@ -2,6 +2,13 @@
 
 {% block body %}
 <h2>Hello dude! Please LogIn </h2>
+
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+        <div class="flash-notice">
+            {{ flashMessage }}
+        </div>
+    {% endfor %}
+
     <p>
     {{ form_errors(form) }}
 

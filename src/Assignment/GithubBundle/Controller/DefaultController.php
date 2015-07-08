@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class DefaultController extends Controller
 {
@@ -39,57 +39,23 @@ class DefaultController extends Controller
             $form->submit($request);
             // data is an array with "user", "pass"
             $data = $form->getData();
+            $gitHubClient = $this->container->get('github');
 
-            // check github
-            $client  = new Client(['base_uri' => self::BASE_URL]);
-
-            try{
-
-               //$res = $client->get('/users/dhalkin');
-               $res = $client->get('authorizations', ['auth' => [$data['username'], $data['password']]]);
-               $body = $res->getBody();
-
-            }catch (RequestException $e){
-
-                if($e->hasResponse()){
-                    $code = $e->getResponse()->getStatusCode();
-                    $e->getResponse()->getReasonPhrase();
-                    sleep(1);
-                }
+            $list = $this->container->get('github')->verifyAuth($data);
+            if (!is_object($list)) {
+                $this->addFlash(
+                    'notice',
+                    $list
+                );
+                    return $this->redirectToRoute('assignment_github_default_index');
             }
 
-
-
-            //login process
-            $token = new UsernamePasswordToken( $data['username'], $oauthToken, 'main', ['ROLE_USER']);
-            $this->get('security.token_storage')->setToken($token);
             return $this->redirectToRoute('assignment_github_default_user');
 
         }
-
-
         return array('form'=>$form->createView());
     }
 
-
-    /**
-     * @Route("/login")
-     */
-    public function loginAction()
-    {
-
-            $client = new Client(
-                [
-                    // Base URI is used with relative requests
-                    'base_uri' => 'http://ya.ru',
-                    // You can set any number of default request options.
-                    'timeout' => 2.0,
-                ]
-            );
-
-            $response = $client->get('http://ya.ru');
-
-    }
 
     /**
      * @Route("/logout")
@@ -101,15 +67,16 @@ class DefaultController extends Controller
         return $this->redirectToRoute('assignment_github_default_index');
     }
 
+
     /**
      * @Route("/user")
      * @Template()
+     * @Security("has_role('ROLE_USER')")
      */
     public function userAction()
     {
         $user = $this->get('security.token_storage')->getToken()->getUser();
-
-        return array('user_name' => $user);
+        $list = $this->container->get('github')->getListRepoBaseAuth();
+        return array('user_name' => $user, 'list_repo'=> $list);
     }
-
 }

@@ -4,4 +4,22 @@
 Hello {{ user_name }}! || <a href="{{ path('assignment_github_default_logout') }}">logout</a>
 <h2>Here is a list of yours repo:</h2>
 
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Full Name</th>
+        <th>Description</th>
+      </tr>
+
+    {% for repo in list_repo %}
+      <tr>
+       <td>{{ repo.id }}</td>
+       <td>{{ repo.name }}</td>
+       <td>{{ repo.full_name }}</td>
+       <td>{{ repo.description }}</td>
+      </tr>
+    {% endfor %}
+
+    </table>
 {% endblock %}

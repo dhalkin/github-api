@@ -1,0 +1,4 @@
+services:
+    github:
+        class:     Assignment\GithubBundle\Services\Github
+        arguments: [@security.token_storage]
